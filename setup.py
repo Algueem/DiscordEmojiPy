@@ -1,7 +1,7 @@
 import setuptools
 
 setuptools.setup(name='demojipy',
-                 version='1.0',
+                 version='1.1',
                  license='MIT',
                  description='Python API Wrapper for DiscordEmoji',
                  author='Algueem',
