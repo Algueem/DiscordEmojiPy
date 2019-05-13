@@ -8,8 +8,7 @@ setuptools.setup(name='demojipy',
                  url='https://github.com/Algueem/DiscordEmojiPy',
                  keywords=['pydemoji', 'discordemoji'],
                  install_requires=[
-                     'requests',
-                     'json'
+                     'requests'
                  ],
                  packages=setuptools.find_packages()
                  )
