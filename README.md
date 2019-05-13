@@ -1,6 +1,6 @@
 # Docs | DiscordEmojiPy - DiscordEmoji API Wrapper for Python
 
-## 🇺🇸 EN
+## EN Docs
 
 ### Installation
 
@@ -17,6 +17,7 @@ DEmoji.attr
 ```
 
 Available attributes:  
+
 Attribute | Parameters | Return | Description
 -------- | -------- | -------- | --------
 search_by_id() | emojiid: int | dict | Fetch DiscordEmoji's Emoji by id
