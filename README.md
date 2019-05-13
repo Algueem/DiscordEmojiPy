@@ -16,7 +16,7 @@ from DEmojiPython import DEmoji
 DEmoji.attr
 ```
 
-Available attributes:
+Available attributes:  
 Attribute | Parameters | Return | Description
 -------- | -------- | -------- | --------
 search_by_id() | emojiid: int | dict | Fetch DiscordEmoji's Emoji by id
