@@ -53,5 +53,5 @@ DEmoji.stats()
 ```
 
 
-More attributes are coming soon...
+More attributes are coming soon...  
 If there is any grammar error call me at Discord: Alguem#7724
