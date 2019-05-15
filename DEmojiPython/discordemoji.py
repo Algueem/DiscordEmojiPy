@@ -24,7 +24,8 @@ class GetMethod(object):
                 return resp
 
 
-class DEmoji(object):
+class DiscordEmoji(object):
+
     @staticmethod
     def stats():
         """
@@ -63,9 +64,9 @@ class DEmoji(object):
             if len(emojisbyauthor) > 0:
                 return emojisbyauthor
             elif len(emojisbyauthor) <= 0:
-                return None and "The user with the specified name didn't send any emoji."
+                return None
         else:
-            raise AuthorError('Parameter author not specified')
+            raise MissingParameter('Parameter author not specified')
 
     @staticmethod
     def search_by_name(name: str=None):
@@ -91,9 +92,9 @@ class DEmoji(object):
                 res.sort(key=srt, reverse=True)
                 return res[0]
             else:
-                return None and "Emoji not found."
+                return None
         else:
-            raise NameError('Parameter name not specified')
+            raise MissingParameter('Parameter name not specified')
 
     @staticmethod
     def search_by_id(emojiid: int=None):
@@ -117,7 +118,22 @@ class DEmoji(object):
                 res.sort(key=srt, reverse=True)
                 return res[0]
             else:
-                return None and "Emoji not found."
+                return None
         else:
-            raise IDError('Parameter id not specified')
+            raise MissingParameter('Parameter id not specified')
 
+    @staticmethod
+    def packs():
+        """
+        Fetch DE emoji packs
+
+        Returns
+        -------
+        list[dict]
+            list of dict containing DE packs's info
+        """
+        res = GetMethod().get_type('packs')
+        return res
+
+
+DEmoji = DiscordEmoji()
