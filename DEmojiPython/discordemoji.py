@@ -1,5 +1,6 @@
-import requests
+import aiohttp
 import json
+from asgiref.sync import async_to_sync
 
 
 from .errors import *
@@ -14,9 +15,12 @@ class GetMethod(object):
             "stats": "https://discordemoji.com/api?request=stats"
         }
 
-    def get_type(self, method):
+    @async_to_sync
+    async def get_type(self, method):
         try:
-            resp = requests.get(self.methods.get(method)).json()
+            async with aiohttp.ClientSession() as session:
+                async with session.get(self.methods.get(method)) as req:
+                    resp = await req.json()
         except json.decoder.JSONDecodeError:
             pass
         else:
@@ -25,19 +29,34 @@ class GetMethod(object):
 
 
 class DiscordEmoji(object):
+    # Searchs
 
     @staticmethod
-    def stats():
+    def search_emojis(search: str = None):
         """
-        Fetch DE stats
+        Search DE emojis
+
+        Parameters
+        -------
+        search: str, the name of the emoji you want to search
 
         Returns
         -------
-        dict
-            data given from the JSON response
+        list[dict]
+            list of dict containing emojis's info
         """
-        res = GetMethod().get_type('stats')
-        return res
+        if search:
+            res = list(GetMethod().get_type('total'))
+            emojis = []
+            for obj in res:
+                if search.lower() in obj['title'].lower():
+                    emojis.append(obj)
+            if len(emojis) > 0:
+                return emojis
+            elif len(emojis) <= 0:
+                return None
+        else:
+            raise MissingParameter('Parameter search not specified')
 
     @staticmethod
     def search_by_author(author: str=None):
@@ -55,10 +74,11 @@ class DiscordEmoji(object):
             list with dicts containing the emojis's information
         """
         if author:
-            res = list(GetMethod().get_type('total'))
+            res = GetMethod().get_type('total')
+            emojis = list(res)
             search = author
             emojisbyauthor = []
-            for obj in res:
+            for obj in emojis:
                 if obj['submitted_by'] == search:
                     emojisbyauthor.append(obj)
             if len(emojisbyauthor) > 0:
@@ -84,13 +104,13 @@ class DiscordEmoji(object):
             dict containing the emojis's information
         """
         if name:
-            res = list(GetMethod().get_type('total'))
+            emojis = list(GetMethod().get_type('total'))
             search = name
-            if any([obj['title'] == search for obj in res]):
+            if any([obj['title'] == search for obj in emojis]):
                 def srt(obj: dict):
                     return obj['title'] == search
-                res.sort(key=srt, reverse=True)
-                return res[0]
+                emojis.sort(key=srt, reverse=True)
+                return emojis[0]
             else:
                 return None
         else:
@@ -122,6 +142,21 @@ class DiscordEmoji(object):
         else:
             raise MissingParameter('Parameter id not specified')
 
+    # Info
+
+    @staticmethod
+    def stats():
+        """
+        Fetch DE stats
+
+        Returns
+        -------
+        dict
+            data given from the JSON response
+        """
+        res = GetMethod().get_type('stats')
+        return res
+
     @staticmethod
     def packs():
         """
@@ -135,33 +170,6 @@ class DiscordEmoji(object):
         res = list(GetMethod().get_type('packs'))
         res.sort(key=lambda d: d['id'])
         return res
-
-    @staticmethod
-    def search_emojis(search: str=None):
-        """
-        Search DE emojis
-
-        Parameters
-        -------
-        search: str, the name of the emoji you want to search
-
-        Returns
-        -------
-        list[dict]
-            list of dict containing emojis's info
-        """
-        if search:
-            res = list(GetMethod().get_type('total'))
-            emojis = []
-            for obj in res:
-                if search.lower() in obj['title'].lower():
-                    emojis.append(obj)
-            if len(emojis) > 0:
-                return emojis
-            elif len(emojis) <= 0:
-                return None
-        else:
-            raise MissingParameter('Parameter search not specified')
 
 
 DEmoji = DiscordEmoji()
