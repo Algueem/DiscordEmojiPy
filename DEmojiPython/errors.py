@@ -1,12 +1,4 @@
-class NameError(TypeError):
-    pass
-
-
-class IDError(TypeError):
-    pass
-
-
-class AuthorError(TypeError):
+class MissingParameter(TypeError):
     pass
 
 
