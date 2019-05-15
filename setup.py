@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 
-with open('README.md') as fp:
+with open('README.md', 'r') as fp:
     long_desc = fp.read()
 
 
@@ -10,6 +10,7 @@ setup(name='demojipy',
       license='MIT',
       description='Python Wrapper for DiscordEmoji API',
       long_description=long_desc,
+      long_description_content_type="text/markdown",
       author='Algueem',
       url='https://github.com/Algueem/DiscordEmojiPy',
       keywords=['pydemoji', 'discordemoji'],
