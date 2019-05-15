@@ -13,7 +13,7 @@ pip install demojipy
 ```python
 from DEmojiPython import DEmoji
 
-DEmoji.attr
+DEmoji.attr()
 ```
 
 Available attributes:  
