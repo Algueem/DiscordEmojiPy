@@ -24,6 +24,7 @@ search_by_id() | emojiid: int | dict | Fetch DiscordEmoji's Emoji by id
 search_by_name() | name: str | dict | Fetch DiscordEmoji's Emoji by name
 search_by_author() | author: str | list[dict] | Fetch DiscordEmoji's Emojis submitted by an user
 stats() | None | dict | Fetch DiscordEmoji's stats
+packs() | None | list[dict] | Fetch DiscordEmoji's emoji packs
 
 ### Examples:
 ```python
@@ -50,8 +51,14 @@ DEmoji.search_by_author('Kohai') # must be case insensitive
 DEmoji.stats()
 # Response:
 {"emoji":int,"users":int,"faves":int,"pending_approvals":int}
+
+# Code
+DEmoji.packs()
+#Response:
+[{"id":8,"name":"Original Remixes #1", ...}, ...]
 ```
 
 
 More attributes are coming soon...
+
 If there is any grammar error call me at Discord: Alguem#7724
