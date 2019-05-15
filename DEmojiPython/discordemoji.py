@@ -132,8 +132,36 @@ class DiscordEmoji(object):
         list[dict]
             list of dict containing DE packs's info
         """
-        res = GetMethod().get_type('packs')
+        res = list(GetMethod().get_type('packs'))
+        res.sort(key=lambda d: d['id'])
         return res
+
+    @staticmethod
+    def search_emojis(search: str=None):
+        """
+        Search DE emojis
+
+        Parameters
+        -------
+        search: str, the name of the emoji you want to search
+
+        Returns
+        -------
+        list[dict]
+            list of dict containing emojis's info
+        """
+        if search:
+            res = list(GetMethod().get_type('total'))
+            emojis = []
+            for obj in res:
+                if search.lower() in obj['title'].lower():
+                    emojis.append(obj)
+            if len(emojis) > 0:
+                return emojis
+            elif len(emojis) <= 0:
+                return None
+        else:
+            raise MissingParameter('Parameter search not specified')
 
 
 DEmoji = DiscordEmoji()
