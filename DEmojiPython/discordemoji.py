@@ -1,6 +1,6 @@
 import aiohttp
 import json
-from asgiref.sync import async_to_sync
+import asyncio
 
 
 from .errors import *
@@ -15,7 +15,6 @@ class GetMethod(object):
             "stats": "https://discordemoji.com/api?request=stats"
         }
 
-    @async_to_sync
     async def get_type(self, method):
         try:
             async with aiohttp.ClientSession() as session:
@@ -30,9 +29,9 @@ class GetMethod(object):
 
 class DiscordEmoji(object):
     # Searchs
+    loop = asyncio.get_event_loop()
 
-    @staticmethod
-    def search_emojis(search: str = None):
+    def search_emojis(self, search: str = None):
         """
         Search DE emojis
 
@@ -46,10 +45,11 @@ class DiscordEmoji(object):
             list of dict containing emojis's info
         """
         if search:
-            res = list(GetMethod().get_type('total'))
+            res = self.loop.run_until_complete(GetMethod().get_type('total'))
+            self.loop.close()
             emojis = []
             for obj in res:
-                if search.lower() in obj['title'].lower():
+                if obj['title'].lower().startswith(search.lower()):
                     emojis.append(obj)
             if len(emojis) > 0:
                 return emojis
@@ -58,8 +58,7 @@ class DiscordEmoji(object):
         else:
             raise MissingParameter('Parameter search not specified')
 
-    @staticmethod
-    def search_by_author(author: str=None):
+    def search_by_author(self, author: str=None):
         """
         Fetch DE Emojis submitted by an user
 
@@ -74,8 +73,8 @@ class DiscordEmoji(object):
             list with dicts containing the emojis's information
         """
         if author:
-            res = GetMethod().get_type('total')
-            emojis = list(res)
+            emojis = self.loop.run_until_complete(GetMethod().get_type('total'))
+            self.loop.close()
             search = author
             emojisbyauthor = []
             for obj in emojis:
@@ -88,8 +87,7 @@ class DiscordEmoji(object):
         else:
             raise MissingParameter('Parameter author not specified')
 
-    @staticmethod
-    def search_by_name(name: str=None):
+    def search_by_name(self, name: str=None):
         """
         Fetch DE Emoji by name
 
@@ -104,7 +102,8 @@ class DiscordEmoji(object):
             dict containing the emojis's information
         """
         if name:
-            emojis = list(GetMethod().get_type('total'))
+            emojis = self.loop.run_until_complete(GetMethod().get_type('total'))
+            self.loop.close()
             search = name
             if any([obj['title'] == search for obj in emojis]):
                 def srt(obj: dict):
@@ -116,8 +115,7 @@ class DiscordEmoji(object):
         else:
             raise MissingParameter('Parameter name not specified')
 
-    @staticmethod
-    def search_by_id(emojiid: int=None):
+    def search_by_id(self, emojiid: int=None):
         """
         Fetch DE Emoji by id
 
@@ -131,7 +129,8 @@ class DiscordEmoji(object):
             dict containing the emojis's information
         """
         if emojiid:
-            res = list(GetMethod().get_type('total'))
+            res = self.loop.run_until_complete(GetMethod().get_type('total'))
+            self.loop.close()
             if any([obj['id'] == emojiid for obj in res]):
                 def srt(obj: dict):
                     return obj['id'] == emojiid
@@ -144,8 +143,7 @@ class DiscordEmoji(object):
 
     # Info
 
-    @staticmethod
-    def stats():
+    def stats(self):
         """
         Fetch DE stats
 
@@ -154,11 +152,11 @@ class DiscordEmoji(object):
         dict
             data given from the JSON response
         """
-        res = GetMethod().get_type('stats')
+        res = self.loop.run_until_complete(GetMethod().get_type('stats'))
+        self.loop.close()
         return res
 
-    @staticmethod
-    def packs():
+    def packs(self):
         """
         Fetch DE emoji packs
 
@@ -167,7 +165,8 @@ class DiscordEmoji(object):
         list[dict]
             list of dict containing DE packs's info
         """
-        res = list(GetMethod().get_type('packs'))
+        res = self.loop.run_until_complete(GetMethod().get_type('total'))
+        self.loop.close()
         res.sort(key=lambda d: d['id'])
         return res
 
