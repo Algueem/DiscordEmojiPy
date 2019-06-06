@@ -6,7 +6,7 @@ with open('README.md', 'r') as fp:
 
 
 setup(name='demojipy',
-      version='2.0.0b',
+      version='2.0.0a',
       license='MIT',
       description='Python Wrapper for DiscordEmoji API',
       long_description=long_desc,
@@ -19,7 +19,7 @@ setup(name='demojipy',
       ],
       packages=find_packages(),
       classifiers=[
-          "Development Status :: 4 - Beta",
+          "Development Status :: 3 - Alpha",
           "Programming Language :: Python :: 3.6",
           "License :: OSI Approved :: MIT License",
           "Operating System :: OS Independent"
