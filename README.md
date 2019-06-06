@@ -1,15 +1,16 @@
-# Docs | DiscordEmojiPy - DiscordEmoji API Wrapper for Python
+# DiscordEmojiPy - DiscordEmoji API Wrapper for Python
+## Documentation
 
-## EN Docs
+### English
 
-### Installation
+#### Installation
 
 ```
 pip install demojipy
 ```
 
 
-### Search:
+#### Search:
 ```python
 from DEmojiPython import DEmoji
 
@@ -64,7 +65,15 @@ DEmoji.packs()
 [{"id":2,"name":"Anime Pack  #1", ...}, ...]
 ```
 
-
 More attributes are coming soon...
 
-If there is any grammar error call me at Discord: Alguem#7724
+If there is any grammar error call me at Discord: Alguem#1599
+
+## ChangeLog
+### v2.0.0a
+- Change requests to aiohttp(testing) 
+- Added Packs attribute
+
+## Future Updates
+- [ ] Add categories
+- [ ] Add site urls in dicts
