@@ -1,37 +1,52 @@
-import aiohttp
+import requests
 import json
-import asyncio
-
+from datetime import datetime, timedelta
 
 from .errors import *
 
 
 class GetMethod(object):
-    def __init__(self):
+    def __init__(self, method):
+        with open('DEmojiPython/cache.json', 'r') as fp:
+            self.cache = json.load(fp)
         self.methods = {
             "total": "https://discordemoji.com/api",
             "packs": "https://discordemoji.com/api/packs",
             "categories": "https://discordemoji.com/api?request=categories",
             "stats": "https://discordemoji.com/api?request=stats"
         }
+        self.method = method
 
-    async def get_type(self, method):
+    def get(self):
+        met = self.cache.get(self.method)
+        if met:
+            if self.method in ('total', 'stats'):
+                if datetime.utcnow() <= datetime.strptime(self.cache[self.method]['request_after'],
+                                                          "%Y-%m-%d %H:%M:%S.%f"):
+                    return self.cache[self.method]['info']
+                else:
+                    pass
+            else:
+                return self.cache[self.method]['info']
+        req = requests.get(self.methods.get(self.method))
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(self.methods.get(method)) as req:
-                    resp = await req.json()
-        except json.decoder.JSONDecodeError:
-            pass
+            response = req.json()
+        except json.JSONDecodeError:
+            raise RequestFailed("Can't make request to API. Try again later.")
         else:
-            if resp is not None:
-                return resp
+            self.cache[self.method] = {}
+            self.cache[self.method]['info'] = response
+            if self.method in ('total', 'stats'):
+                self.cache[self.method]['request_after'] = f'{datetime.utcnow() + timedelta(minutes=30)}'
+            with open('DEmojiPython/cache.json', 'w') as fp:
+                json.dump(self.cache, fp, indent=4)
+            return response
 
 
 class DiscordEmoji(object):
     # Searchs
-    loop = asyncio.get_event_loop()
-
-    def search_emojis(self, search: str = None):
+    @staticmethod
+    def search_emojis(search: str = None, startswith: bool=True):
         """
         Search DE emojis
 
@@ -39,18 +54,25 @@ class DiscordEmoji(object):
         -------
         search: str, the name of the emoji you want to search
 
+        startswith: bool, specifies whether search will be by the beginning of the word or not
+
         Returns
         -------
         list[dict]
             list of dict containing emojis's info
         """
         if search:
-            res = self.loop.run_until_complete(GetMethod().get_type('total'))
-            self.loop.close()
+            res = GetMethod('total').get()
             emojis = []
             for obj in res:
-                if obj['title'].lower().startswith(search.lower()):
-                    emojis.append(obj)
+                if startswith:
+                    if obj['title'].lower().startswith(search.lower()):
+                        obj['site_url'] = f"https://discordemoji.com/emoji/{obj['slug']}"
+                        emojis.append(obj)
+                else:
+                    if search.lower() in obj['title'].lower():
+                        obj['site_url'] = f"https://discordemoji.com/emoji/{obj['slug']}"
+                        emojis.append(obj)
             if len(emojis) > 0:
                 return emojis
             elif len(emojis) <= 0:
@@ -58,7 +80,8 @@ class DiscordEmoji(object):
         else:
             raise MissingParameter('Parameter search not specified')
 
-    def search_by_author(self, author: str=None):
+    @staticmethod
+    def search_by_author(author: str=None):
         """
         Fetch DE Emojis submitted by an user
 
@@ -73,12 +96,12 @@ class DiscordEmoji(object):
             list with dicts containing the emojis's information
         """
         if author:
-            emojis = self.loop.run_until_complete(GetMethod().get_type('total'))
-            self.loop.close()
+            emojis = GetMethod('total').get()
             search = author
             emojisbyauthor = []
             for obj in emojis:
                 if obj['submitted_by'] == search:
+                    obj['site_url'] = f"https://discordemoji.com/emoji/{obj['slug']}"
                     emojisbyauthor.append(obj)
             if len(emojisbyauthor) > 0:
                 return emojisbyauthor
@@ -87,7 +110,8 @@ class DiscordEmoji(object):
         else:
             raise MissingParameter('Parameter author not specified')
 
-    def search_by_name(self, name: str=None):
+    @staticmethod
+    def search_by_name(name: str=None):
         """
         Fetch DE Emoji by name
 
@@ -102,20 +126,22 @@ class DiscordEmoji(object):
             dict containing the emojis's information
         """
         if name:
-            emojis = self.loop.run_until_complete(GetMethod().get_type('total'))
-            self.loop.close()
+            emojis = GetMethod('total').get()
             search = name
             if any([obj['title'] == search for obj in emojis]):
                 def srt(obj: dict):
                     return obj['title'] == search
                 emojis.sort(key=srt, reverse=True)
-                return emojis[0]
+                emoji = emojis[0]
+                emoji['site_url'] = f"https://discordemoji.com/emoji/{emoji['slug']}"
+                return emoji
             else:
                 return None
         else:
             raise MissingParameter('Parameter name not specified')
 
-    def search_by_id(self, emojiid: int=None):
+    @staticmethod
+    def search_by_id(emojiid: int=None):
         """
         Fetch DE Emoji by id
 
@@ -129,21 +155,22 @@ class DiscordEmoji(object):
             dict containing the emojis's information
         """
         if emojiid:
-            res = self.loop.run_until_complete(GetMethod().get_type('total'))
-            self.loop.close()
-            if any([obj['id'] == emojiid for obj in res]):
+            emojis = GetMethod('total').get()
+            if any([obj['id'] == emojiid for obj in emojis]):
                 def srt(obj: dict):
                     return obj['id'] == emojiid
-                res.sort(key=srt, reverse=True)
-                return res[0]
+                emojis.sort(key=srt, reverse=True)
+                emoji = emojis[0]
+                emoji['site_url'] = f"https://discordemoji.com/emoji/{emoji['slug']}"
+                return emoji
             else:
                 return None
         else:
             raise MissingParameter('Parameter id not specified')
 
     # Info
-
-    def stats(self):
+    @staticmethod
+    def stats():
         """
         Fetch DE stats
 
@@ -152,11 +179,11 @@ class DiscordEmoji(object):
         dict
             data given from the JSON response
         """
-        res = self.loop.run_until_complete(GetMethod().get_type('stats'))
-        self.loop.close()
+        res = GetMethod('stats').get()
         return res
 
-    def packs(self):
+    @staticmethod
+    def packs():
         """
         Fetch DE emoji packs
 
@@ -165,10 +192,14 @@ class DiscordEmoji(object):
         list[dict]
             list of dict containing DE packs's info
         """
-        res = self.loop.run_until_complete(GetMethod().get_type('total'))
-        self.loop.close()
-        res.sort(key=lambda d: d['id'])
-        return res
+        packsreq = GetMethod('packs').get()
+        packsreq.sort(key=lambda d: d['id'])
+        packs = []
+        for pack in packsreq:
+            pack['site_url'] = f"https://discordemoji.com/pack/{pack['slug']}"
+            packs.append(pack)
+
+        return packs
 
 
 DEmoji = DiscordEmoji()
