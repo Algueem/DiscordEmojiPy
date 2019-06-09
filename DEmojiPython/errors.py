@@ -4,3 +4,7 @@ class MissingParameter(TypeError):
 
 class NotFound(Exception):
     pass
+
+
+class RequestFailed(Exception):
+    pass
