@@ -24,7 +24,7 @@ Attribute | Parameters | Return | Description
 search_by_id() | emojiid: int | dict | Fetch DiscordEmoji's Emoji by id
 search_by_name() | name: str | dict | Fetch DiscordEmoji's Emoji by name
 search_by_author() | author: str | list[dict] | Fetch DiscordEmoji's Emojis submitted by an user
-search_emojis() | search: str | list[dict] | Fetch emojis you want to search
+search_emojis() | search: str, startswith: bool | list[dict] | Fetch emojis you want to search, specifying whether search will be by the beginning of the word (default) or not (by specifying False in the startswith parameter)
 stats() | None | dict | Fetch DiscordEmoji's stats
 packs() | None | list[dict] | Fetch DiscordEmoji's emoji packs
 
@@ -48,7 +48,7 @@ DEmoji.search_by_author('Kohai') # must be case insensitive
 {'title': 'emojiTwo', 'submitted_by': 'Kohai'}...]
 
 # Code
-DEmoji.search_emojis('PR_')
+DEmoji.search_emojis('PR_', startswith=True)
 # Response
 [{'id': 3830, 'title': 'PR_bug', ...}, ...]
 # If not found, returns None
@@ -70,10 +70,15 @@ More attributes are coming soon...
 If there is any grammar error call me at Discord: Alguem#1599
 
 ## ChangeLog
+### v2.0.0
+- [X] Add site urls in dicts
+- Change aiohttp to requests again(because very bugs)
+- Added parameter "startswith" in "search_emojis"(specifies whether search will be by the beginning of the word or not)
+- Added Packs attribute
+- Added cache system, to avoid making too many requests for api.
 ### v2.0.0a
 - Change requests to aiohttp(testing) 
-- Added Packs attribute
+- Added Packs attribute(Testing)
 
 ## Future Updates
 - [ ] Add categories
-- [ ] Add site urls in dicts
