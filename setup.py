@@ -5,8 +5,12 @@ with open('README.md', 'r') as fp:
     long_desc = fp.read()
 
 
+with open('requirements.txt', 'r') as fp:
+    requirements = fp.readlines()
+
+
 setup(name='demojipy',
-      version='2.0.0',
+      version='2.0.1',
       license='MIT',
       description='Python Wrapper for DiscordEmoji API',
       long_description=long_desc,
@@ -15,7 +19,7 @@ setup(name='demojipy',
       url='https://github.com/Algueem/DiscordEmojiPy',
       keywords=['pydemoji', 'discordemoji'],
       install_requires=[
-          'requests'
+          requirements
       ],
       packages=find_packages(),
       classifiers=[

@@ -70,6 +70,8 @@ More attributes are coming soon...
 If there is any grammar error call me at Discord: Alguem#1599
 
 ## ChangeLog
+### v2.0.1
+- Fix cache bug
 ### v2.0.0
 - [X] Add site urls in dicts
 - Change aiohttp to requests again(because very bugs)

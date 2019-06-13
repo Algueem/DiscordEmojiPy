@@ -1,14 +1,13 @@
 import requests
 import json
 from datetime import datetime, timedelta
+import os
 
 from .errors import *
 
 
 class GetMethod(object):
     def __init__(self, method):
-        with open('DEmojiPython/cache.json', 'r') as fp:
-            self.cache = json.load(fp)
         self.methods = {
             "total": "https://discordemoji.com/api",
             "packs": "https://discordemoji.com/api/packs",
@@ -18,29 +17,37 @@ class GetMethod(object):
         self.method = method
 
     def get(self):
-        met = self.cache.get(self.method)
+        import DEmojiPython
+        path = DEmojiPython.__path__[0]
+        if not os.path.exists(path + '/cache.json'):
+            open(path + '/cache.json', 'w')
+            with open(path + '/cache.json', 'w') as fp:
+                obj = {}
+                json.dump(obj=obj, fp=fp, indent=4)
+        cache = json.load(open(path + '/cache.json', 'r'))
+        met = cache.get(self.method)
         if met:
             if self.method in ('total', 'stats'):
-                if datetime.utcnow() <= datetime.strptime(self.cache[self.method]['request_after'],
-                                                          "%Y-%m-%d %H:%M:%S.%f"):
-                    return self.cache[self.method]['info']
+                if datetime.utcnow() <= datetime.strptime(cache[self.method]['request_after'], "%Y-%m-%d %H:%M:%S.%f"):
+                    return cache[self.method]['info']
                 else:
                     pass
             else:
-                return self.cache[self.method]['info']
+                return cache[self.method]['info']
         req = requests.get(self.methods.get(self.method))
         try:
             response = req.json()
         except json.JSONDecodeError:
             raise RequestFailed("Can't make request to API. Try again later.")
         else:
-            self.cache[self.method] = {}
-            self.cache[self.method]['info'] = response
+            cache[self.method] = {}
+            cache[self.method]['info'] = response
             if self.method in ('total', 'stats'):
-                self.cache[self.method]['request_after'] = f'{datetime.utcnow() + timedelta(minutes=30)}'
-            with open('DEmojiPython/cache.json', 'w') as fp:
-                json.dump(self.cache, fp, indent=4)
+                cache[self.method]['request_after'] = f'{datetime.utcnow() + timedelta(minutes=30)}'
+            with open(path + '/cache.json', 'w') as fp:
+                json.dump(cache, fp, indent=4)
             return response
+
 
 
 class DiscordEmoji(object):
