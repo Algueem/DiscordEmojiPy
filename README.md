@@ -70,6 +70,12 @@ More attributes are coming soon...
 If there is any grammar error call me at Discord: Alguem#1599
 
 ## ChangeLog
+###v3.0.0
+- Async Request
+- Added client
+- Cache Setting
+- Added APIResponse object
+
 ### v2.0.1
 - Fix cache bug
 ### v2.0.0
