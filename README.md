@@ -12,20 +12,21 @@ pip install demojipy
 
 #### Search:
 ```python
-from DEmojiPython import DEmoji
+import demoji
 
-DEmoji.attr()
+demojiclient = demoji.Client(use_cache=False)
+demojiclient.attr()
 ```
 
 Available attributes:  
 
 Attribute | Parameters | Return | Description
 -------- | -------- | -------- | --------
-search_by_id() | emojiid: int | dict | Fetch DiscordEmoji's Emoji by id
-search_by_name() | name: str | dict | Fetch DiscordEmoji's Emoji by name
+get_by_id() | id: int | APIResponse object | Fetch DiscordEmoji's Emoji by id
+get_by_name() | name: str | APIResponse object | Fetch DiscordEmoji's Emoji by name
 search_by_author() | author: str | list[dict] | Fetch DiscordEmoji's Emojis submitted by an user
-search_emojis() | search: str, startswith: bool | list[dict] | Fetch emojis you want to search, specifying whether search will be by the beginning of the word (default) or not (by specifying False in the startswith parameter)
-stats() | None | dict | Fetch DiscordEmoji's stats
+get_emojis() | search: str, startswith: bool | list[dict] | Fetch emojis you want to search, specifying whether search will be by the beginning of the word (default) or not (by specifying False in the startswith parameter)
+stats() | None | APIResponse object | Fetch DiscordEmoji's stats
 packs() | None | list[dict] | Fetch DiscordEmoji's emoji packs
 
 ### Examples:
@@ -70,7 +71,7 @@ More attributes are coming soon...
 If there is any grammar error call me at Discord: Alguem#1599
 
 ## ChangeLog
-###v3.0.0
+### v3.0.0
 - Async Request
 - Added client
 - Cache Setting
