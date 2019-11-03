@@ -10,7 +10,7 @@ with open('requirements.txt', 'r') as fp:
 
 
 setup(name='demojipy',
-      version='2.0.1',
+      version='3.0.0',
       license='MIT',
       description='Python Wrapper for DiscordEmoji API',
       long_description=long_desc,
